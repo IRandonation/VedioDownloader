@@ -1,0 +1,10 @@
+ffmpeg-python>=0.2.0
+pillow>=10.0.0
+requests>=2.31.0
+openai-whisper>=20231117
+customtkinter>=5.2.2
+packaging>=26.0
+yt-dlp>=2025.10.14
+torch>=2.0.0
+torchaudio>=2.0.0
+torchvision>=0.15.0
