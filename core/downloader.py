@@ -13,6 +13,7 @@ class VideoDownloader:
             ydl_opts = {
                 'quiet': True,
                 'no_warnings': True,
+                'extract_flat': 'in_playlist', # 遇到列表时只提取基本信息，不深入解析每个视频，提高速度
             }
             if cookie_file and os.path.exists(cookie_file):
                 ydl_opts['cookiefile'] = cookie_file
@@ -28,6 +29,31 @@ class VideoDownloader:
     @staticmethod
     def _parse_info(info):
         """解析 yt-dlp 信息"""
+        # 处理播放列表/合集
+        if info.get('_type') == 'playlist' or ('entries' in info and not info.get('formats')):
+            title = info.get("title", "未知列表")
+            entry_count = len(list(info.get("entries", [])))
+            return {
+                "success": True,
+                "title": f"[合集] {title} (共 {entry_count} 个视频)",
+                "qualities": [
+                    {
+                        "id": "bestvideo+bestaudio/best",
+                        "display": "最佳画质 (Best Quality) - 整单下载",
+                        "size": 0,
+                        "size_str": "Unknown",
+                    },
+                    {
+                        "id": "bestaudio/best",
+                        "display": "仅音频 (Audio Only) - 整单下载",
+                        "size": 0,
+                        "size_str": "Unknown",
+                    }
+                ],
+                "thumbnail": None,
+                "duration": None
+            }
+
         title = info.get("title", "未知标题")
         formats = info.get("formats", [])
         qualities = []
