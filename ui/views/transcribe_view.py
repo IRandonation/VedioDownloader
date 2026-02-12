@@ -5,6 +5,7 @@ from tkinter import filedialog
 import os
 from core.transcriber import VideoTranscriber
 from utils.config import WHISPER_CONFIG
+from ui.theme import Theme
 import torch
 import subprocess
 import sys
@@ -27,7 +28,8 @@ class TranscribeView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self, 
             text="语音转文字 (Whisper)", 
-            font=ctk.CTkFont(size=24, weight="bold")
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=24, weight="bold"),
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
@@ -41,15 +43,22 @@ class TranscribeView(ctk.CTkFrame):
             text="选择媒体文件",
             command=self.select_file,
             width=120,
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            hover_color=Theme.COLOR_SECONDARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            border_width=Theme.BORDER_WIDTH,
+            border_color=Theme.COLOR_BORDER,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.file_btn.grid(row=0, column=0, padx=(0, 10))
 
         self.file_label = ctk.CTkLabel(
             self.file_frame,
             text="未选择文件",
-            text_color="gray",
-            anchor="w"
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            anchor="w",
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.file_label.grid(row=0, column=1, sticky="ew")
 
@@ -58,25 +67,39 @@ class TranscribeView(ctk.CTkFrame):
         self.options_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         
         # Model Selection
-        self.model_label = ctk.CTkLabel(self.options_frame, text="模型大小:")
+        self.model_label = ctk.CTkLabel(self.options_frame, text="模型大小:", font=ctk.CTkFont(family=Theme.FONT_FAMILY))
         self.model_label.grid(row=0, column=0, padx=(0, 10))
         
         self.model_menu = ctk.CTkOptionMenu(
             self.options_frame,
             values=WHISPER_CONFIG["models"],
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            button_color=Theme.COLOR_PRIMARY,
+            button_hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            dropdown_fg_color=Theme.COLOR_SURFACE,
+            dropdown_text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.model_menu.set(WHISPER_CONFIG["default_model"])
         self.model_menu.grid(row=0, column=1, padx=(0, 20))
 
         # Format Selection
-        self.format_label = ctk.CTkLabel(self.options_frame, text="输出格式:")
+        self.format_label = ctk.CTkLabel(self.options_frame, text="输出格式:", font=ctk.CTkFont(family=Theme.FONT_FAMILY))
         self.format_label.grid(row=0, column=2, padx=(0, 10))
         
         self.format_menu = ctk.CTkOptionMenu(
             self.options_frame,
             values=WHISPER_CONFIG["output_formats"],
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            button_color=Theme.COLOR_PRIMARY,
+            button_hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            dropdown_fg_color=Theme.COLOR_SURFACE,
+            dropdown_text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.format_menu.set(WHISPER_CONFIG["default_format"])
         self.format_menu.grid(row=0, column=3, padx=(0, 20))
@@ -89,7 +112,9 @@ class TranscribeView(ctk.CTkFrame):
             variable=self.gpu_var,
             onvalue=True,
             offvalue=False,
-            state="normal" if torch.cuda.is_available() else "disabled"
+            state="normal" if torch.cuda.is_available() else "disabled",
+            progress_color=Theme.COLOR_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.gpu_switch.grid(row=0, column=4, padx=(0, 10))
 
@@ -97,8 +122,8 @@ class TranscribeView(ctk.CTkFrame):
         self.helper_label = ctk.CTkLabel(
             self.options_frame, 
             text="注: 模型越大精度越高，但速度越慢。GPU加速需显卡支持。",
-            font=ctk.CTkFont(size=12),
-            text_color="gray"
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=12),
+            text_color=Theme.COLOR_TEXT_SECONDARY
         )
         self.helper_label.grid(row=1, column=0, columnspan=5, pady=(5, 0), sticky="w")
 
@@ -112,8 +137,12 @@ class TranscribeView(ctk.CTkFrame):
             command=self.start_transcribe,
             state="disabled",
             height=40,
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_PRIMARY,
+            hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.transcribe_btn.grid(row=0, column=0, padx=(0, 10))
 
@@ -123,10 +152,11 @@ class TranscribeView(ctk.CTkFrame):
             command=self.stop_transcribe,
             state="disabled",
             height=40,
-            fg_color="red",
+            fg_color=Theme.COLOR_ERROR,
             hover_color="darkred",
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.stop_btn.grid(row=0, column=1, padx=(10, 0))
 
@@ -140,20 +170,36 @@ class TranscribeView(ctk.CTkFrame):
         self.info_frame.grid(row=0, column=0, sticky="ew", pady=(0, 5))
         self.info_frame.grid_columnconfigure(1, weight=1)
 
-        self.status_label = ctk.CTkLabel(self.info_frame, text="准备就绪", anchor="w")
+        self.status_label = ctk.CTkLabel(
+            self.info_frame, 
+            text="准备就绪", 
+            anchor="w",
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
+        )
         self.status_label.grid(row=0, column=0, sticky="w")
 
-        self.percent_label = ctk.CTkLabel(self.info_frame, text="", anchor="e")
+        self.percent_label = ctk.CTkLabel(
+            self.info_frame, 
+            text="", 
+            anchor="e",
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, weight="bold")
+        )
         self.percent_label.grid(row=0, column=1, sticky="e")
 
         # Progress Bar
-        self.progress_bar = ctk.CTkProgressBar(self.progress_frame, height=10)
+        self.progress_bar = ctk.CTkProgressBar(
+            self.progress_frame, 
+            height=10,
+            progress_color=Theme.COLOR_PRIMARY
+        )
         self.progress_bar.grid(row=1, column=0, sticky="ew")
         self.progress_bar.set(0)
         self.progress_bar.grid_remove()
 
         # 5. Log Area (Optimized)
-        self.log_frame = ctk.CTkFrame(self, fg_color=("gray90", "gray10")) # Darker background in dark mode
+        self.log_frame = ctk.CTkFrame(self, fg_color=Theme.COLOR_SURFACE)
         self.log_frame.grid(row=5, column=0, padx=20, pady=(10, 20), sticky="nsew")
         self.log_frame.grid_columnconfigure(0, weight=1)
         self.log_frame.grid_rowconfigure(1, weight=1)
@@ -161,8 +207,9 @@ class TranscribeView(ctk.CTkFrame):
         self.log_header = ctk.CTkLabel(
             self.log_frame, 
             text=" 终端日志", 
-            font=ctk.CTkFont(size=12, weight="bold"),
-            anchor="w"
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=12, weight="bold"),
+            anchor="w",
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.log_header.grid(row=0, column=0, padx=5, pady=2, sticky="ew")
 
@@ -170,9 +217,10 @@ class TranscribeView(ctk.CTkFrame):
             self.log_frame, 
             state="disabled",
             font=ctk.CTkFont(family="Consolas", size=12), # Monospace font
-            fg_color=("white", "black"),
-            text_color=("black", "white"),
-            activate_scrollbars=True
+            fg_color=Theme.COLOR_BG,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            activate_scrollbars=True,
+            corner_radius=Theme.CORNER_RADIUS
         )
         self.log_textbox.grid(row=1, column=0, padx=1, pady=1, sticky="nsew")
 

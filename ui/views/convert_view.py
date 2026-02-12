@@ -5,6 +5,7 @@ from tkinter import filedialog
 import os
 from core.converter import MediaConverter
 from utils.config import CONVERT_CONFIG
+from ui.theme import Theme
 
 class ConvertView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -24,7 +25,8 @@ class ConvertView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self, 
             text="格式转换 (视频 -> 音频)", 
-            font=ctk.CTkFont(size=24, weight="bold")
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=24, weight="bold"),
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
@@ -38,15 +40,22 @@ class ConvertView(ctk.CTkFrame):
             text="选择视频文件",
             command=self.select_file,
             width=120,
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            hover_color=Theme.COLOR_SECONDARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            border_width=Theme.BORDER_WIDTH,
+            border_color=Theme.COLOR_BORDER,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.file_btn.grid(row=0, column=0, padx=(0, 10))
 
         self.file_label = ctk.CTkLabel(
             self.file_frame,
             text="未选择文件",
-            text_color="gray",
-            anchor="w"
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            anchor="w",
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.file_label.grid(row=0, column=1, sticky="ew")
 
@@ -54,24 +63,38 @@ class ConvertView(ctk.CTkFrame):
         self.options_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.options_frame.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
         
-        self.format_label = ctk.CTkLabel(self.options_frame, text="输出格式:")
+        self.format_label = ctk.CTkLabel(self.options_frame, text="输出格式:", font=ctk.CTkFont(family=Theme.FONT_FAMILY))
         self.format_label.grid(row=0, column=0, padx=(0, 10))
         
         self.format_menu = ctk.CTkOptionMenu(
             self.options_frame,
             values=CONVERT_CONFIG["supported_formats"],
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            button_color=Theme.COLOR_PRIMARY,
+            button_hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            dropdown_fg_color=Theme.COLOR_SURFACE,
+            dropdown_text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.format_menu.set(CONVERT_CONFIG["default_format"])
         self.format_menu.grid(row=0, column=1, padx=(0, 20))
 
-        self.bitrate_label = ctk.CTkLabel(self.options_frame, text="音频码率:")
+        self.bitrate_label = ctk.CTkLabel(self.options_frame, text="音频码率:", font=ctk.CTkFont(family=Theme.FONT_FAMILY))
         self.bitrate_label.grid(row=0, column=2, padx=(0, 10))
         
         self.bitrate_menu = ctk.CTkOptionMenu(
             self.options_frame,
             values=CONVERT_CONFIG["supported_bitrates"],
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            button_color=Theme.COLOR_PRIMARY,
+            button_hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            dropdown_fg_color=Theme.COLOR_SURFACE,
+            dropdown_text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.bitrate_menu.set(CONVERT_CONFIG["default_bitrate"])
         self.bitrate_menu.grid(row=0, column=3)
@@ -86,8 +109,12 @@ class ConvertView(ctk.CTkFrame):
             command=self.start_convert,
             state="disabled",
             height=40,
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_PRIMARY,
+            hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.convert_btn.grid(row=0, column=0, padx=(0, 10))
 
@@ -97,10 +124,11 @@ class ConvertView(ctk.CTkFrame):
             command=self.stop_convert,
             state="disabled",
             height=40,
-            fg_color="red",
+            fg_color=Theme.COLOR_ERROR,
             hover_color="darkred",
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.stop_btn.grid(row=0, column=1, padx=(10, 0))
 
@@ -109,16 +137,24 @@ class ConvertView(ctk.CTkFrame):
         self.progress_frame.grid(row=4, column=0, padx=20, pady=(0, 10), sticky="ew")
         self.progress_frame.grid_columnconfigure(0, weight=1)
 
-        self.status_label = ctk.CTkLabel(self.progress_frame, text="")
+        self.status_label = ctk.CTkLabel(
+            self.progress_frame, 
+            text="",
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
+        )
         self.status_label.grid(row=0, column=0, pady=(0, 5))
 
-        self.progress_bar = ctk.CTkProgressBar(self.progress_frame)
+        self.progress_bar = ctk.CTkProgressBar(
+            self.progress_frame,
+            progress_color=Theme.COLOR_PRIMARY
+        )
         self.progress_bar.grid(row=1, column=0, sticky="ew")
         self.progress_bar.set(0)
         self.progress_bar.grid_remove()
 
         # 5. Log Area (Optimized)
-        self.log_frame = ctk.CTkFrame(self, fg_color=("gray90", "gray10")) # Darker background in dark mode
+        self.log_frame = ctk.CTkFrame(self, fg_color=Theme.COLOR_SURFACE)
         self.log_frame.grid(row=5, column=0, padx=20, pady=(10, 20), sticky="nsew")
         self.log_frame.grid_columnconfigure(0, weight=1)
         self.log_frame.grid_rowconfigure(1, weight=1)
@@ -126,8 +162,9 @@ class ConvertView(ctk.CTkFrame):
         self.log_header = ctk.CTkLabel(
             self.log_frame, 
             text=" 终端日志", 
-            font=ctk.CTkFont(size=12, weight="bold"),
-            anchor="w"
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=12, weight="bold"),
+            anchor="w",
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.log_header.grid(row=0, column=0, padx=5, pady=2, sticky="ew")
 
@@ -135,9 +172,10 @@ class ConvertView(ctk.CTkFrame):
             self.log_frame, 
             state="disabled",
             font=ctk.CTkFont(family="Consolas", size=12), # Monospace font
-            fg_color=("white", "black"),
-            text_color=("black", "white"),
-            activate_scrollbars=True
+            fg_color=Theme.COLOR_BG,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            activate_scrollbars=True,
+            corner_radius=Theme.CORNER_RADIUS
         )
         self.log_textbox.grid(row=1, column=0, padx=1, pady=1, sticky="nsew")
 

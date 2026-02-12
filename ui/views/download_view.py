@@ -5,6 +5,7 @@ from tkinter import filedialog
 import os
 from core.downloader import VideoDownloader
 from utils.config import PATHS
+from ui.theme import Theme
 
 class DownloadView(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -32,7 +33,8 @@ class DownloadView(ctk.CTkFrame):
         self.title_label = ctk.CTkLabel(
             self, 
             text="视频下载", 
-            font=ctk.CTkFont(size=24, weight="bold")
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=24, weight="bold"),
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.title_label.grid(row=0, column=0, padx=20, pady=(20, 10), sticky="w")
 
@@ -44,7 +46,12 @@ class DownloadView(ctk.CTkFrame):
         self.url_entry = ctk.CTkEntry(
             self.url_frame, 
             placeholder_text="请输入 Bilibili, YouTube 等视频链接",
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            border_color=Theme.COLOR_BORDER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            placeholder_text_color=Theme.COLOR_TEXT_SECONDARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.url_entry.grid(row=0, column=0, padx=(0, 10), sticky="ew")
         self.url_entry.bind("<Return>", lambda event: self.fetch_info())
@@ -54,7 +61,11 @@ class DownloadView(ctk.CTkFrame):
             text="获取信息", 
             command=self.fetch_info,
             width=100,
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_PRIMARY,
+            hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.analyze_btn.grid(row=0, column=1, sticky="e")
 
@@ -63,7 +74,14 @@ class DownloadView(ctk.CTkFrame):
             self,
             values=["请先获取视频信息"],
             state="disabled",
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            button_color=Theme.COLOR_PRIMARY,
+            button_hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            dropdown_fg_color=Theme.COLOR_SURFACE,
+            dropdown_text_color=Theme.COLOR_TEXT_PRIMARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.quality_menu.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
 
@@ -79,15 +97,22 @@ class DownloadView(ctk.CTkFrame):
             text="导入 Cookie",
             command=self.select_cookie,
             width=100,
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            hover_color=Theme.COLOR_SECONDARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            border_width=Theme.BORDER_WIDTH,
+            border_color=Theme.COLOR_BORDER,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.cookie_btn.grid(row=0, column=0, padx=(0, 10))
         
         self.cookie_label = ctk.CTkLabel(
             self.settings_frame,
             text="未选择 Cookie",
-            text_color="gray",
-            anchor="w"
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            anchor="w",
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.cookie_label.grid(row=0, column=1, sticky="ew")
 
@@ -97,15 +122,22 @@ class DownloadView(ctk.CTkFrame):
             text="选择保存路径",
             command=self.select_path,
             width=100,
-            corner_radius=0
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_SECONDARY,
+            hover_color=Theme.COLOR_SECONDARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            border_width=Theme.BORDER_WIDTH,
+            border_color=Theme.COLOR_BORDER,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.path_btn.grid(row=0, column=2, padx=(10, 10))
         
         self.path_label = ctk.CTkLabel(
             self.settings_frame,
             text=self.download_path,
-            text_color="gray",
-            anchor="w"
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            anchor="w",
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
         )
         self.path_label.grid(row=0, column=3, sticky="ew")
 
@@ -119,8 +151,12 @@ class DownloadView(ctk.CTkFrame):
             command=self.start_download,
             state="disabled",
             height=40,
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            fg_color=Theme.COLOR_PRIMARY,
+            hover_color=Theme.COLOR_PRIMARY_HOVER,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.download_btn.grid(row=0, column=0, padx=(0, 10))
 
@@ -130,10 +166,11 @@ class DownloadView(ctk.CTkFrame):
             command=self.stop_download,
             state="disabled",
             height=40,
-            fg_color="red",
+            fg_color=Theme.COLOR_ERROR,
             hover_color="darkred",
-            font=ctk.CTkFont(size=16),
-            corner_radius=0
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=16),
+            corner_radius=Theme.CORNER_RADIUS,
+            text_color_disabled=Theme.COLOR_TEXT_SECONDARY
         )
         self.stop_btn.grid(row=0, column=1, padx=(10, 0))
 
@@ -142,16 +179,24 @@ class DownloadView(ctk.CTkFrame):
         self.progress_frame.grid(row=5, column=0, padx=20, pady=(0, 10), sticky="ew")
         self.progress_frame.grid_columnconfigure(0, weight=1)
 
-        self.status_label = ctk.CTkLabel(self.progress_frame, text="")
+        self.status_label = ctk.CTkLabel(
+            self.progress_frame, 
+            text="",
+            text_color=Theme.COLOR_TEXT_SECONDARY,
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY)
+        )
         self.status_label.grid(row=0, column=0, pady=(0, 5))
 
-        self.progress_bar = ctk.CTkProgressBar(self.progress_frame)
+        self.progress_bar = ctk.CTkProgressBar(
+            self.progress_frame,
+            progress_color=Theme.COLOR_PRIMARY
+        )
         self.progress_bar.grid(row=1, column=0, sticky="ew")
         self.progress_bar.set(0)
         self.progress_bar.grid_remove() # Hide initially
 
         # 6. Log Area (Optimized)
-        self.log_frame = ctk.CTkFrame(self, fg_color=("gray90", "gray10")) # Darker background in dark mode
+        self.log_frame = ctk.CTkFrame(self, fg_color=Theme.COLOR_SURFACE)
         self.log_frame.grid(row=6, column=0, padx=20, pady=(10, 20), sticky="nsew")
         self.log_frame.grid_columnconfigure(0, weight=1)
         self.log_frame.grid_rowconfigure(1, weight=1)
@@ -159,8 +204,9 @@ class DownloadView(ctk.CTkFrame):
         self.log_header = ctk.CTkLabel(
             self.log_frame, 
             text=" 终端日志", 
-            font=ctk.CTkFont(size=12, weight="bold"),
-            anchor="w"
+            font=ctk.CTkFont(family=Theme.FONT_FAMILY, size=12, weight="bold"),
+            anchor="w",
+            text_color=Theme.COLOR_TEXT_PRIMARY
         )
         self.log_header.grid(row=0, column=0, padx=5, pady=2, sticky="ew")
 
@@ -168,9 +214,10 @@ class DownloadView(ctk.CTkFrame):
             self.log_frame, 
             state="disabled",
             font=ctk.CTkFont(family="Consolas", size=12), # Monospace font
-            fg_color=("white", "black"),
-            text_color=("black", "white"),
-            activate_scrollbars=True
+            fg_color=Theme.COLOR_BG,
+            text_color=Theme.COLOR_TEXT_PRIMARY,
+            activate_scrollbars=True,
+            corner_radius=Theme.CORNER_RADIUS
         )
         self.log_textbox.grid(row=1, column=0, padx=1, pady=1, sticky="nsew")
 
